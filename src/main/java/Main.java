@@ -2,22 +2,28 @@ import io.javalin.Javalin;
 
 public class Main {
     /*
-    Trying to get information (GET request for example) sends a HTTP request like the following
-    GET path HTTPVersion
-    Host: val
-    User-Agent: val
+    Visit https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages for more documentation:
+    Both HTTP requests and responses use the following format:
+    ---------------------------------------------------------------
+    | one line about the response or request                       |
+    | arbitrary amount of headers (like Content-type: text/html)   |
+    |                                                              |
+    | body                                                         |
+    ---------------------------------------------------------------
 
-    Trying to send information (POST request, response for GET, or response for POST)
-    POST path HTTPVersion
-    Headers...like the following...
-    Content-length: val
-    ...
+    REQUESTS
+    --------
+    In requests, the first line is usually the following: method path HTTPVersion
+    Method is either GET, POST, DELETE, or PUT. Further, the body is usually empty for GET but not POST.
+    Some common HEADERS are "Host: val" and "User-Agent: val".
+    NOTE, forms, by default, store input info. in the path of a GET request. If the form uses a POST request,
+    then the input info. is stored in the body.
 
-    body
-     */
-    /*
-    Essentially, anything the server sends a response, the later is what could be sent. But when
-    the client sends a request, it can be of either form.
+    RESPONSES
+    ---------
+    In responses, the first line is usually HTTPVersion status EnglishStatus.
+    a common header is "Content-Length: val", "Content-type: val", and "Last-Modified: val".
+    For GET responses, the body is usually the HTML to send. For POST responses, the body can be anything.
      */
     public static void main(String[] args) {
         Javalin app = Javalin.create(config -> {
@@ -25,11 +31,12 @@ public class Main {
         });
 
         app.get("/", (ctx) -> {
-            // Request information
-            System.out.println("---------------------GET: Start Body-----------------------");
+            System.out.println("---------------------GET: Request Info. Start-----------------------");
             // Notice that there is nothing printed since this is for GET request.
-            System.out.println(ctx.body());
-            System.out.println("---------------------GET: End Body-----------------------");
+            System.out.println("Body: " +ctx.body());
+            System.out.println("Host: " + ctx.header("Host"));
+            System.out.println("User-Agent: " + ctx.header("User-Agent"));
+            System.out.println("---------------------GET: Request Info. End-----------------------");
 
             // Response information.
             ctx.header("CustomGETHeader", "Custom GET Header");
@@ -37,10 +44,11 @@ public class Main {
             ctx.render("index.html");
         });
         app.post("/", (ctx) -> {
-            // Request information
-            System.out.println("---------------------POST: Start Body-----------------------");
-            System.out.println(ctx.body());
-            System.out.println("---------------------POST: End Body-----------------------");
+            System.out.println("---------------------POST: Request Info. Start-----------------------");
+            System.out.println("Body: " +ctx.body());
+            System.out.println("Host: " + ctx.header("Host"));
+            System.out.println("User-Agent: " + ctx.header("User-Agent"));
+            System.out.println("---------------------POST: Request Info. End-----------------------");
 
             // Response information
             ctx.header("CustomPOSTHeader", "Custom POST Header");
